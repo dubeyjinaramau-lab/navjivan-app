@@ -1,0 +1,4 @@
+storePassword=Navjivan@2026
+keyPassword=Navjivan@2026
+keyAlias=navjivan
+storeFile=../navjivan-release-key.jks

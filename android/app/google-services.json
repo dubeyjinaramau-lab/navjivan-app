@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "139823563134",
+    "firebase_url": "https://navjivan-85239-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "navjivan-85239",
+    "storage_bucket": "navjivan-85239.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139823563134:android:21ff6f4a190c4cb941732f",
+        "android_client_info": {
+          "package_name": "com.example.sambhav_sewa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5n7N0tgyGs-3VpdL8OpvycGeA72vMYYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:139823563134:android:53d7725bf48e4ae441732f",
+        "android_client_info": {
+          "package_name": "com.navjivan.secondshadi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5n7N0tgyGs-3VpdL8OpvycGeA72vMYYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
