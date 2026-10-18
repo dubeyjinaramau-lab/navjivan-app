@@ -1,0 +1,6 @@
+name = "second-shadi-worker"
+compatibility_date = "2026-09-25"
+
+[assets]
+directory = "./build/web"
+not_found_handling = "single-page-application"

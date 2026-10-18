@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -57,6 +54,15 @@ class DefaultFirebaseOptions {
     appId: '1:139823563134:android:53d7725bf48e4ae441732f',
     messagingSenderId: '139823563134',
     projectId: 'navjivan-85239',
+    databaseURL: 'https://navjivan-85239-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'navjivan-85239.firebasestorage.app',
+  );
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyC3oAKYh9g4jFBH4vue5iFA7X0OJtgjrew',
+    appId: '1:139823563134:web:81fd7855370e5a7241732f',
+    messagingSenderId: '139823563134',
+    projectId: 'navjivan-85239',
+    authDomain: 'navjivan-85239.firebaseapp.com',
     databaseURL: 'https://navjivan-85239-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'navjivan-85239.firebasestorage.app',
   );

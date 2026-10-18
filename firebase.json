@@ -1,1 +1,31 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"navjivan-85239","appId":"1:139823563134:android:53d7725bf48e4ae441732f","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"navjivan-85239","configurations":{"android":"1:139823563134:android:53d7725bf48e4ae441732f"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "navjivan-85239",
+          "appId": "1:139823563134:android:53d7725bf48e4ae441732f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "navjivan-85239",
+          "configurations": {
+            "android": "1:139823563134:android:53d7725bf48e4ae441732f",
+            "web": "1:139823563134:web:81fd7855370e5a7241732f"
+          }
+        }
+      }
+    }
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
+}

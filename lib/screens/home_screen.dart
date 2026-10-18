@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'matches_screen.dart';
 import 'chat_screen.dart';
-import 'profile_screen.dart';
+import 'my_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
       partnerName: "User",
     ),
 
-    ProfileScreen(),
+   MyProfileScreen(),
 
   ];
 
@@ -47,7 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
           });
 
         },
-
+        selectedItemColor: const Color(0xFF388E3C),
+        unselectedItemColor: Colors.grey,
         items: const [
 
           BottomNavigationBarItem(

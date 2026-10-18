@@ -1,32 +1,40 @@
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
+
+  void _continue(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/home',
+            (route) => false,
+      );
+    } else {
+      Navigator.pushNamed(context, '/login');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFDFBF6),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-
             children: [
-
               const Text(
                 "👩‍❤️‍👨",
-                style: TextStyle(
-                  fontSize: 80,
-                ),
+                style: TextStyle(fontSize: 80),
               ),
-
               const SizedBox(height: 25),
-
               const Text(
                 "NAVJIVAN",
                 style: TextStyle(
@@ -36,9 +44,7 @@ class WelcomeScreen extends StatelessWidget {
                   letterSpacing: 2,
                 ),
               ),
-
               const SizedBox(height: 6),
-
               const Text(
                 "(Second Shadi)",
                 style: TextStyle(
@@ -46,9 +52,7 @@ class WelcomeScreen extends StatelessWidget {
                   color: Colors.black54,
                 ),
               ),
-
               const SizedBox(height: 20),
-
               const Text(
                 "जहाँ ज़िंदगी दोबारा मुस्कराती है",
                 textAlign: TextAlign.center,
@@ -58,18 +62,12 @@ class WelcomeScreen extends StatelessWidget {
                   color: Colors.deepOrange,
                 ),
               ),
-
               const SizedBox(height: 50),
-
               SizedBox(
                 width: double.infinity,
                 height: 55,
-
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-
+                  onPressed: () => _continue(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
@@ -77,7 +75,6 @@ class WelcomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-
                   child: const Text(
                     "Continue with Mobile",
                     style: TextStyle(
@@ -87,9 +84,7 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               const Text(
                 "Your privacy is respected.",
                 style: TextStyle(
@@ -97,9 +92,7 @@ class WelcomeScreen extends StatelessWidget {
                   color: Colors.black54,
                 ),
               ),
-
               const SizedBox(height: 5),
-
               const Text(
                 "Terms & Privacy Policy",
                 style: TextStyle(

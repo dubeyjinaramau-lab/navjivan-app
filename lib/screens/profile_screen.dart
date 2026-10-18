@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'profile_details.dart';
 import '../terms_conditions.dart';
 import '../privacy_policy.dart';
+import 'children_details_screen.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -21,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? _selectedState;
   String? _selectedCity;
   String? _selectedChildren;
+  Map<String, dynamic> _childrenDetailsData = {};
   String? _selectedChildrenResponsibility;
 
   bool _acceptedTerms = false;
@@ -125,58 +128,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
         throw Exception("User not logged in");
       }
 
-      await _firestore
-          .collection('profiles')
-          .doc(user.uid)
-          .set({
-        'fullName': _nameController.text.trim(),
-        'age': _ageController.text.trim(),
-        'birthYear': _birthYearController.text.trim(),
-        'city': _selectedCity == 'Other'
-            ? _otherCityController.text.trim()
-            : _selectedCity ?? '',
-        'state': _selectedState == 'Other'
-            ? _otherStateController.text.trim()
-            : _selectedState ?? '',
-        'gender': _selectedGender,
-        'maritalStatus': _selectedMaritalStatus,
-        'about': _aboutController.text.trim(),
-        'privateDetails': {
-          'mobile': _mobileController.text.trim(),
-          'email': _emailController.text.trim(),
-          'birthDate': _birthDateController.text.trim(),
-          'birthTime': _birthTimeController.text.trim(),
-          'birthPlace': _birthPlaceController.text.trim(),
-        },
-        'religion': _selectedReligion ?? '',
-        'caste': _selectedCaste ?? '',
-        'gotra': _selectedGotra ?? '',
-        'children': _selectedChildren ?? '',
-        'childrenResponsibility': _selectedChildren == 'हाँ'
-            ? (_selectedChildrenResponsibility == 'अन्य'
-            ? _otherChildrenResponsibilityController.text.trim()
-            : _selectedChildrenResponsibility ?? '')
-            : '',
-        'createdAt': FieldValue.serverTimestamp(),
-        'photoSelected': _selectedImage != null,
-      });
-      if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('प्रोफ़ाइल सेव हो गई है!'),
-        ),
-      );
+    await _firestore
+        .collection('profiles')
+        .doc(user.uid)
+        .set({
+    'fullName': _nameController.text.trim(),
+    'age': _ageController.text.trim(),
+    'birthYear': _birthYearController.text.trim(),
+    'city': _selectedCity == 'Other'
+    ? _otherCityController.text.trim()
+        : _selectedCity ?? '',
+    'state': _selectedState == 'Other'
+    ? _otherStateController.text.trim()
+        : _selectedState ?? '',
+    'gender': _selectedGender,
+    'maritalStatus': _selectedMaritalStatus,
+    'about': _aboutController.text.trim(),
+    'privateDetails': {
+    'mobile': _mobileController.text.trim(),
+    'email': _emailController.text.trim(),
+    'birthDate': _birthDateController.text.trim(),
+    'birthTime': _birthTimeController.text.trim(),
+    'birthPlace': _birthPlaceController.text.trim(),
+    },
+    'religion': _selectedReligion ?? '',
+    'caste': _selectedCaste ?? '',
+    'gotra': _selectedGotra ?? '',
 
-      Navigator.pushReplacementNamed(context, '/id_verify');
+    // बच्चों की सामान्य जानकारी
+    'children': _selectedChildren ?? '',
+
+    // नए बच्चों वाले पेज से प्राप्त जानकारी
+    'childrenCount': _selectedChildren == 'हाँ'
+    ? (_childrenDetailsData['childrenCount'] ?? '')
+        : '',
+    'childrenAgeGroup': _selectedChildren == 'हाँ'
+    ? (_childrenDetailsData['childrenAgeGroup'] ?? '')
+        : '',
+    'childrenLivingWith': _selectedChildren == 'हाँ'
+    ? (_childrenDetailsData['childrenLivingWith'] ?? '')
+        : '',
+    'childrenFinancialResponsibility':
+    _selectedChildren == 'हाँ'
+    ? (_childrenDetailsData[
+    'childrenFinancialResponsibility'] ??
+    '')
+        : '',
+    'childrenResponsibilities': _selectedChildren == 'हाँ'
+    ? (_childrenDetailsData['childrenResponsibilities'] ?? [])
+        : [],
+    'childrenCareResponsibility': _selectedChildren == 'हाँ'
+    ? (_childrenDetailsData['childrenCareResponsibility'] ?? '')
+        : '',
+    'expectedPartnerRole': _selectedChildren == 'हाँ'
+    ? (_childrenDetailsData['expectedPartnerRole'] ?? '')
+        : '',
+    'childrenDetails': _selectedChildren == 'हाँ'
+    ? (_childrenDetailsData['childrenDetails'] ?? '')
+        : '',
+
+    // पुरानी जिम्मेदारी वाली फ़ील्ड
+    'childrenResponsibility': _selectedChildren == 'हाँ'
+    ? (_selectedChildrenResponsibility == 'अन्य'
+    ? _otherChildrenResponsibilityController.text.trim()
+        : _selectedChildrenResponsibility ?? '')
+        : '',
+
+    'createdAt': FieldValue.serverTimestamp(),
+    'photoSelected': _selectedImage != null,
+    });
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+    content: Text('प्रोफ़ाइल सेव हो गई है!'),
+    ),
+    );
+
+    Navigator.pushReplacementNamed(context, '/id_verify');
     } catch (e) {
-      if (!mounted) return;
+    if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("प्रोफ़ाइल सेव करने में समस्या: $e"),
-        ),
-      );
+    ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+    content: Text("प्रोफ़ाइल सेव करने में समस्या: $e"),
+    ),
+    );
     }
   }
 
@@ -575,55 +614,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text(value),
                 );
               }).toList(),
-              onChanged: (value) {
+              onChanged: (value) async {
                 setState(() {
                   _selectedChildren = value;
 
                   if (value == 'नहीं') {
                     _selectedChildrenResponsibility = null;
                     _otherChildrenResponsibilityController.clear();
+                    _childrenDetailsData = {};
                   }
                 });
+
+                if (value == 'हाँ' && mounted) {
+                  final result = await Navigator.push<Map<String, dynamic>>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChildrenDetailsScreen(
+                        initialData: _childrenDetailsData,
+                      ),
+                    ),
+                  );
+
+                  if (result != null && mounted) {
+                    setState(() {
+                      _childrenDetailsData = result;
+                    });
+                  }
+                }
               },
             ),
 
             const SizedBox(height: 16),
-
-            if (_selectedChildren == 'हाँ') ...[
-              DropdownButtonFormField<String>(
-                value: _selectedChildrenResponsibility,
-                decoration: const InputDecoration(
-                  labelText: 'बच्चों की जिम्मेदारी',
-                  border: OutlineInputBorder(),
-                ),
-                items: ProfileDetails.childrenResponsibilityOptions.map((value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedChildrenResponsibility = value;
-                  });
-                },
-              ),
-
-              if (_selectedChildrenResponsibility == 'अन्य') ...[
-                const SizedBox(height: 16),
-
-                TextField(
-                  controller: _otherChildrenResponsibilityController,
-                  decoration: const InputDecoration(
-                    labelText: 'जिम्मेदारी के बारे में लिखें',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ],
-            ],
-
-            const SizedBox(height: 16),
-
             // **********************************************
             // वैवाहिक स्थिति
             // **********************************************

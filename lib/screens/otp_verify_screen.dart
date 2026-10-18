@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class OtpVerifyScreen extends StatefulWidget {
   final String verificationId;
 
@@ -13,54 +15,152 @@ class OtpVerifyScreen extends StatefulWidget {
 }
 
 class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
-  final TextEditingController _otpController = TextEditingController();
+  final TextEditingController _otpController =
+  TextEditingController();
+
+  bool _loading = false;
 
   @override
   void dispose() {
     _otpController.dispose();
     super.dispose();
   }
+
+  // ============================================================
+  // OTP VERIFY
+  // ============================================================
+
   Future<void> verifyOtp() async {
+    if (_loading) return;
+
+    final otp = _otpController.text.trim();
+
+    if (otp.length != 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("कृपया 6 digit OTP दर्ज करें।"),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _loading = true;
+    });
 
     try {
-
-      final credential = PhoneAuthProvider.credential(
+      final credential =
+      PhoneAuthProvider.credential(
         verificationId: widget.verificationId,
-        smsCode: _otpController.text.trim(),
+        smsCode: otp,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      // Firebase login
+      await FirebaseAuth.instance
+          .signInWithCredential(credential);
 
+      final user =
+          FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        throw Exception(
+          "Firebase user नहीं मिला।",
+        );
+      }
+
+      // ========================================================
+      // EXISTING PROFILE CHECK
+      // ========================================================
+
+      final profileDoc =
+      await FirebaseFirestore.instance
+          .collection('profiles')
+          .doc(user.uid)
+          .get();
+
+      print("LOGIN UID = ${user.uid}");
+      print("PROFILE EXISTS = ${profileDoc.exists}");
       if (!mounted) return;
+
+      // ========================================================
+      // PROFILE ALREADY EXISTS
+      // ========================================================
+
+      if (profileDoc.exists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Welcome back! आपकी profile पहले से मौजूद है।",
+            ),
+          ),
+        );
+
+        // Existing user को Profile दोबारा नहीं भरना है।
+        Navigator.pushReplacementNamed(
+          context,
+          '/matches',
+        );
+
+        return;
+      }
+
+      // ========================================================
+      // NEW USER
+      // ========================================================
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("OTP Verified Successfully"),
+          content: Text(
+            "OTP Verified Successfully",
+          ),
         ),
       );
 
-      Navigator.pushReplacementNamed(context, '/profile');
-
+      Navigator.pushReplacementNamed(
+        context,
+        '/profile',
+      );
     } on FirebaseAuthException catch (e) {
-
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            e.message ?? "OTP Verification Failed",
+            e.message ??
+                "OTP Verification Failed",
           ),
         ),
       );
+    } catch (e) {
+      if (!mounted) return;
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "कुछ समस्या हुई: $e",
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
-
   }
+
+  // ============================================================
+  // UI
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("OTP Verification"),
+        title: const Text(
+          "OTP Verification",
+        ),
         centerTitle: true,
       ),
 
@@ -68,10 +168,10 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
         padding: const EdgeInsets.all(24),
 
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment:
+          MainAxisAlignment.center,
 
           children: [
-
             const Icon(
               Icons.verified_user,
               size: 80,
@@ -99,11 +199,15 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
 
             TextField(
               controller: _otpController,
-              keyboardType: TextInputType.number,
+              keyboardType:
+              TextInputType.number,
               maxLength: 6,
-              decoration: const InputDecoration(
+
+              decoration:
+              const InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: "Enter 6 Digit OTP",
+                hintText:
+                "Enter 6 Digit OTP",
               ),
             ),
 
@@ -114,16 +218,26 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
               height: 55,
 
               child: ElevatedButton(
-                onPressed: verifyOtp,
+                onPressed:
+                _loading ? null : verifyOtp,
 
-                child: const Text(
+                child: _loading
+                    ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child:
+                  CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+                    : const Text(
                   "Verify OTP",
                   style: TextStyle(
                     fontSize: 18,
                   ),
                 ),
               ),
-
             ),
           ],
         ),

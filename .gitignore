@@ -46,3 +46,6 @@ app.*.map.json
 # Keep signing keys private
 /navjivan-release-key.jks
 /android/key.properties
+# Cloudflare local files
+.wrangler/
+
